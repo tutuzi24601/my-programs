@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>兔兔子的记录程序发布页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(145deg, #f4f7fc 0%, #e9eef5 100%);
+            color: #0a1c2a;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        #global-bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 2;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero { text-align: center; margin-bottom: 4rem; }
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1f4662, #2c7fb8, #4aa3e2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .hero p { font-size: 1.25rem; color: #2c4e6e; }
+
+        .programs-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2.5rem;
+            justify-content: center;
+            margin: 3rem 0;
+        }
+        .program-card {
+            background: rgba(255,255,255,0.92);
+            border-radius: 2.2rem;
+            box-shadow: 0 25px 40px -14px rgba(0,0,0,0.2);
+            width: 360px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.35s ease;
+            backdrop-filter: blur(2px);
+        }
+        .program-card:hover { transform: translateY(-12px) scale(1.02); background: rgba(255,255,255,0.98); }
+        .card-img-top {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, #cfdfed, #b3cee6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .card-img-top img { width: 100%; height: 100%; object-fit: cover; }
+        .card-img-top span { font-size: 4rem; }
+        .card-content { padding: 1.8rem; }
+        .card-content h3 { font-size: 1.9rem; font-weight: 800; margin-bottom: 0.5rem; color: #1a445b; }
+        .card-badge {
+            display: inline-block;
+            background: #e2eff9;
+            color: #1e6f9f;
+            font-size: 0.8rem;
+            padding: 0.25rem 1rem;
+            border-radius: 40px;
+            margin-bottom: 0.9rem;
+            font-weight: 600;
+        }
+        .card-desc { color: #2c3f4f; line-height: 1.5; }
+        .enter-btn {
+            margin-top: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: #2c7da0;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .program-card:hover .enter-btn { gap: 12px; border-bottom-color: #2c7da0; }
+
+        .detail-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .detail-card {
+            max-width: 1300px;
+            width: 95%;
+            background: #ffffff;
+            border-radius: 2.5rem;
+            overflow: hidden;
+            animation: fadeSlideUp 0.3s ease-out;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .detail-header {
+            background: #fefcf5;
+            padding: 1.5rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2edf7;
+        }
+        .detail-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(120deg, #1f4662, #2c7fb8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .detail-header h2 img { width: 48px; height: 48px; object-fit: cover; border-radius: 16px; }
+        .close-detail {
+            background: none;
+            border: none;
+            font-size: 2.5rem;
+            cursor: pointer;
+            color: #6c8dae;
+        }
+        .close-detail:hover { color: #c00; }
+
+        .gallery-area {
+            background: #f8fbfe;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .gallery-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding-bottom: 0.8rem;
+        }
+        .gallery-scroll img {
+            width: 150px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 1rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .gallery-scroll img:hover { border-color: #2c7fb8; }
+        .main-preview-img {
+            max-width: 100%;
+            max-height: 380px;
+            object-fit: contain;
+            border-radius: 1.5rem;
+            margin-top: 1rem;
+        }
+        .feature-list {
+            background: #f2f7fc;
+            padding: 1.2rem 1.8rem;
+            border-radius: 1.5rem;
+            margin: 1rem 0;
+            border-left: 5px solid #2c7fb8;
+        }
+        .update-note {
+            background: #fef7e0;
+            padding: 1rem 1.5rem;
+            border-radius: 1.5rem;
+            border-left: 5px solid #e4b363;
+        }
+        .detail-footer {
+            background: #fefcf5;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-top: 1px solid #e2edf7;
+        }
+        .download-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .download-link {
+            background: #1f5e8e;
+            color: white;
+            text-decoration: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 2.5rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        .download-link:hover { transform: scale(1.02); opacity: 0.9; }
+        .download-link.secondary { background: #4a7c59; }
+
+        .footer-note {
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(100,120,140,0.3);
+            color: #4a627a;
+        }
+        .footer-note a {
+            color: #2c7fb8;
+            text-decoration: none;
+        }
+        .footer-note a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 800px) {
+            .app-container { padding: 1rem; }
+            .detail-card { width: 98%; }
+            .download-buttons { flex-direction: column; width: 100%; }
+            .download-link { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div id="app" class="app-container">
+    <!-- 首页：展示三个程序卡片 -->
+    <div v-if="!selectedProgram">
+        <div class="hero">
+            <h1>🎮 兔兔子的记录程序发布页</h1>
+            <p>游戏记录 · 书影记录 · Drama记录 | 点击卡片查看详情及下载</p>
+        </div>
+        <div class="programs-grid">
+            <div class="program-card" v-for="(prog, idx) in programs" :key="idx" @click="openDetail(prog)">
+                <div class="card-img-top">
+                    <img v-if="prog.coverImageUrl && prog.coverImageUrl.trim()" :src="prog.coverImageUrl" alt="封面">
+                    <span v-else>{{ prog.coverIcon || '📱' }}</span>
+                </div>
+                <div class="card-content">
+                    <h3>{{ prog.name }}</h3>
+                    <span class="card-badge">v{{ prog.version }}</span>
+                    <p class="card-desc">{{ prog.shortDesc || '点击查看完整介绍与下载' }}</p>
+                    <div class="enter-btn">查看详情 ➜</div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-note">
+            📧 如有问题或建议，欢迎联系：<strong>rararabbitzs@qq.com</strong> &nbsp;|&nbsp;
+            🎥 B站：<a href="https://space.bilibili.com/100947686" target="_blank" rel="noopener noreferrer">兔兔子的空间</a>
+        </div>
+    </div>
+
+    <!-- 详情页模态框 -->
+    <div v-if="selectedProgram" class="detail-overlay" @click.self="closeDetail">
+        <div class="detail-card">
+            <div class="detail-header">
+                <h2>
+                    <img v-if="selectedProgram.coverImageUrl && selectedProgram.coverImageUrl.trim()" :src="selectedProgram.coverImageUrl" style="width:42px;height:42px;object-fit:cover;border-radius:12px;">
+                    <span v-else>{{ selectedProgram.coverIcon }}</span>
+                    {{ selectedProgram.name }}
+                </h2>
+                <button class="close-detail" @click="closeDetail">&times;</button>
+            </div>
+            <div style="padding:1.8rem;">
+                <!-- 多图展示区 -->
+                <div class="gallery-area" v-if="selectedProgram.galleryImages && selectedProgram.galleryImages.length">
+                    <div class="gallery-scroll">
+                        <img v-for="(img, i) in selectedProgram.galleryImages" :key="i" :src="img" @click="currentPreviewImg = img">
+                    </div>
+                    <div class="main-preview"><img :src="currentPreviewImg || selectedProgram.galleryImages[0]" class="main-preview-img"></div>
+                </div>
+                <div v-else class="gallery-area" style="text-align:center;">📸 暂无展示图片</div>
+                
+                <!-- 功能亮点 -->
+                <div class="feature-list">
+                    <h4>⚙️ 核心功能</h4>
+                    <ul>
+                        <li v-for="feat in featureList(selectedProgram.featuresText)" :key="feat">✨ {{ feat }}</li>
+                    </ul>
+                </div>
+                
+                <!-- 更新日志 -->
+                <div class="update-note">
+                    <strong>📌 最近更新</strong><br>
+                    <span style="white-space: pre-line;">{{ selectedProgram.updateLog || '暂无更新说明' }}</span>
+                </div>
+            </div>
+            
+            <!-- 底部双下载按钮 -->
+            <div class="detail-footer">
+                <span style="font-size:0.8rem;">📥 选择版本下载</span>
+                <div class="download-buttons">
+                    <a v-if="selectedProgram.downloadLinks && selectedProgram.downloadLinks[0] && selectedProgram.downloadLinks[0].url" 
+                       :href="selectedProgram.downloadLinks[0].url" class="download-link" target="_blank" rel="noopener noreferrer">
+                        ⬇️ {{ selectedProgram.downloadLinks[0].name || '下载链接 1' }}
+                    </a>
+                    <a v-if="selectedProgram.downloadLinks && selectedProgram.downloadLinks[1] && selectedProgram.downloadLinks[1].url" 
+                       :href="selectedProgram.downloadLinks[1].url" class="download-link secondary" target="_blank" rel="noopener noreferrer">
+                        📦 {{ selectedProgram.downloadLinks[1].name || '下载链接 2' }}
+                    </a>
+                    <div v-if="(!selectedProgram.downloadLinks || !selectedProgram.downloadLinks[0]?.url) && (!selectedProgram.downloadLinks || !selectedProgram.downloadLinks[1]?.url)" 
+                         class="download-link" style="background:#9aaebf; cursor:default;">⏳ 暂无下载链接</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+<script>
+    // ========== 这里存放您提供的完整配置数据 ==========
+    // 游客无法编辑，所有内容都是您预设好的
+    const PROGRAMS_DATA = [
+        {
+            "id": 1,
+            "name": "游戏记录",
+            "version": "2.0",
+            "coverIcon": "📓",
+            "coverImageUrl": "https://s41.ax1x.com/2026/06/13/pmQ9cwj.md.png",
+            "shortDesc": "游戏记录",
+            "downloadLinks": [
+                { "name": "", "url": "" },
+                { "name": "蓝奏云（高速直链）", "url": "https://wwazm.lanzouu.com/ieupg3rqisjc" }
+            ],
+            "galleryImages": [
+                "https://s41.ax1x.com/2026/06/13/pmQ9cwj.md.png",
+                "https://s41.ax1x.com/2026/06/13/pmQ9BSf.md.png",
+                "https://s41.ax1x.com/2026/06/13/pmQ9sOg.md.png",
+                "https://s41.ax1x.com/2026/06/13/pmQ9Dl8.md.png",
+                "https://s41.ax1x.com/2026/06/13/pmQ96mQ.md.png",
+                "https://s41.ax1x.com/2026/06/13/pmQ9r6S.md.png"
+            ],
+            "featuresText": "游戏记录 \n可识别bangumi网页源码自动填充信息 也可自己添加信息\n 可记录待玩待发售  \n可系列关联\n 可写评语 \n可按通关时间显示",
+            "updateLog": "v2.0 修复个人标签无法使用的问题"
+        },
+        {
+            "id": 2,
+            "name": "书影记录",
+            "version": "2.0",
+            "coverIcon": "✅",
+            "coverImageUrl": "https://s41.ax1x.com/2026/06/13/pmQ9b79.md.png",
+            "shortDesc": "书影记录",
+            "downloadLinks": [
+                { "name": "无待看", "url": "https://wwazm.lanzouu.com/iR0xf3rpo5za" },
+                { "name": "有待看", "url": "https://wwazm.lanzouu.com/iQ63F3rpo5yj" }
+            ],
+            "galleryImages": [
+                "https://s41.ax1x.com/2026/06/13/pmQ9b79.md.png"
+            ],
+            "featuresText": "书影记录  \n可识别豆瓣源码 \nTMDB也可识别（不够准确） \n可记录待看 \n可系列关联 \n可写评语 \n可按看完时间显示",
+            "updateLog": "v2.0 增加有待看功能版本"
+        },
+        {
+            "id": 3,
+            "name": "drama记录",
+            "version": "2.1.2",
+            "coverIcon": "📊",
+            "coverImageUrl": "https://s41.ax1x.com/2026/06/13/pmQ9LkR.md.png",
+            "shortDesc": "drama记录",
+            "downloadLinks": [
+                { "name": "乙女BL", "url": "https://wwazm.lanzouu.com/iqcL23rs7x9i" },
+                { "name": "只有乙女", "url": "https://wwazm.lanzouu.com/ixedx3rs7xaj" }
+            ],
+            "galleryImages": [
+                "https://s41.ax1x.com/2026/06/13/pmQ9LkR.md.png"
+            ],
+            "featuresText": "drama记录  \n可识别DL源码识别信息 区分商业同人 乙女BL  \npokedora和stellaworth源码也可识别（不够准确stellaworth封面需要自己复制链接填写） \n可记录 待听 正在听 已听完 \n可系列关联 \n可写评语 \n可按听完时间显示",
+            "updateLog": "v2.1.2 修复系列关联图片展示问题\n\nv2.1.1 修复系列关联功能bug"
+        }
+    ];
+
+    // 背景设置（您配置中 globalBgImage 为空，保持默认渐变背景）
+    const GLOBAL_BG_IMAGE = "";
+    const BG_OPACITY = 0.65;
+    const BG_BLUR = 8;
+
+    new Vue({
+        el: '#app',
+        data: {
+            programs: [],           // 存放三个程序数据
+            selectedProgram: null,  // 当前打开的详情程序
+            currentPreviewImg: null // 当前预览的图片
+        },
+        mounted() {
+            // 加载静态数据（游客只能看，无法修改）
+            this.programs = JSON.parse(JSON.stringify(PROGRAMS_DATA));
+            this.applyGlobalBackground();
+        },
+        methods: {
+            // 应用背景设置（若 globalBgImage 为空则保持默认渐变）
+            applyGlobalBackground() {
+                if (GLOBAL_BG_IMAGE && GLOBAL_BG_IMAGE.trim() !== "") {
+                    document.body.style.backgroundImage = `url(${GLOBAL_BG_IMAGE})`;
+                    document.body.style.backgroundSize = "cover";
+                    document.body.style.backgroundPosition = "center";
+                    document.body.style.backgroundAttachment = "fixed";
+                    
+                    let overlay = document.getElementById('global-bg-overlay');
+                    if (!overlay) {
+                        overlay = document.createElement('div');
+                        overlay.id = 'global-bg-overlay';
+                        document.body.prepend(overlay);
+                    }
+                    overlay.style.backgroundColor = `rgba(0,0,0,${1 - BG_OPACITY})`;
+                    overlay.style.backdropFilter = `blur(${BG_BLUR}px)`;
+                } else {
+                    // 保持原有渐变背景
+                    document.body.style.backgroundImage = "linear-gradient(145deg, #f4f7fc 0%, #e9eef5 100%)";
+                    let overlay = document.getElementById('global-bg-overlay');
+                    if (overlay) overlay.style.backgroundColor = `rgba(0,0,0,0)`;
+                }
+            },
+            
+            // 打开详情页
+            openDetail(program) {
+                this.selectedProgram = program;
+                // 默认展示第一张预览图
+                this.currentPreviewImg = (program.galleryImages && program.galleryImages.length) ? program.galleryImages[0] : null;
+                document.body.style.overflow = 'hidden';
+            },
+            
+            // 关闭详情页
+            closeDetail() {
+                this.selectedProgram = null;
+                document.body.style.overflow = '';
+            },
+            
+            // 解析功能亮点（按行分割）
+            featureList(text) {
+                if (!text) return [];
+                return text.split(/\r?\n/).filter(line => line.trim().length > 0);
+            }
+        }
+    });
+</script>
+</body>
+</html>
