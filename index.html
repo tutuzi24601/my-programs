@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>兔兔子的记录程序发布页</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * {
             margin: 0;
@@ -205,6 +205,7 @@
             border-radius: 2rem;
             text-decoration: none;
             display: inline-block;
+            margin-right: 0.5rem;
         }
 
         .footer-note {
@@ -258,7 +259,7 @@
                 <div class="update-note"><strong>📌 最近更新</strong><br>{{ selectedProgram.updateLog }}</div>
             </div>
             <div class="detail-footer">
-                <div class="download-buttons">
+                <div>
                     <a v-for="link in selectedProgram.downloads" :href="link.url" class="download-link" target="_blank">{{ link.name }}</a>
                 </div>
             </div>
@@ -280,8 +281,12 @@
                     version: '2.0',
                     cover: BASE + 'game_cover.png',
                     gallery: [
-                        BASE + 'game_1.png', BASE + 'game_2.png', BASE + 'game_3.png',
-                        BASE + 'game_4.png', BASE + 'game_5.png', BASE + 'game_6.png'
+                        BASE + 'game_1.png',
+                        BASE + 'game_2.png',
+                        BASE + 'game_3.png',
+                        BASE + 'game_4.png',
+                        BASE + 'game_5.png',
+                        BASE + 'game_6.png'
                     ],
                     features: '游戏记录 \n可识别bangumi网页源码自动填充信息 也可自己添加信息\n可记录待玩待发售\n可系列关联\n可写评语\n可按通关时间显示',
                     updateLog: 'v2.0 修复个人标签无法使用的问题',
@@ -293,7 +298,11 @@
                     name: '书影记录',
                     version: '2.0',
                     cover: BASE + 'book_cover.png',
-                    gallery: [BASE + 'book_1.png'],
+                    gallery: [
+                        BASE + 'book_1.png',
+                        BASE + 'book_2.png',
+                        BASE + 'book_3.png'
+                    ],
                     features: '书影记录\n可识别豆瓣源码\nTMDB也可识别（不够准确）\n可记录待看\n可系列关联\n可写评语\n可按看完时间显示',
                     updateLog: 'v2.0 增加有待看功能版本',
                     downloads: [
@@ -305,7 +314,11 @@
                     name: 'drama记录',
                     version: '2.1.2',
                     cover: BASE + 'drama_cover.png',
-                    gallery: [BASE + 'drama_1.png'],
+                    gallery: [
+                        BASE + 'drama_1.png',
+                        BASE + 'drama_2.png',
+                        BASE + 'drama_3.png'
+                    ],
                     features: 'drama记录\n可识别DL源码识别信息 区分商业同人 乙女BL\npokedora和stellaworth源码也可识别\n可记录待听/正在听/已听完\n可系列关联\n可写评语',
                     updateLog: 'v2.1.2 修复系列关联图片展示问题',
                     downloads: [
